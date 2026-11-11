@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added ranking-metrics library: TREC qrels/run parsing, trec_eval-compatible nDCG@k, MAP, MRR, P@k, paired t-test and randomization test, with a CLI.
 - Initial project structure from the factory utility template.
