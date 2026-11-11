@@ -3,27 +3,22 @@
 ## Running
 
 ```sh
-uv run pytest --cov=ranking_metrics   # tests with coverage report
-uv run python scripts/check.py      # every gate, as CI and the factory run it
+pytest
 ```
+
+The test module is `tests/test_ranking_metrics.py`. Tests import the public package as `ranking_metrics` and assert return values and `RankingError.code` values.
 
 ## Policy
 
-- Branch coverage of `src/ranking_metrics` must stay at or above 80 %; the gate fails below it.
-- Tests exercise the public API (`import ranking_metrics`) and assert every observable effect:
-  return values, raised exceptions and their messages.
-- Each bug fix starts with a failing test that reproduces it.
-- Tests are deterministic: no network, no wall clock, no dependence on test order.
+- Tests are deterministic and use local string fixtures; no network access is required.
+- Tests exercise the public API and assert observable results, including exact metric values, t-test results, and error codes.
+- A development comparison checks `paired_t_test` p-values against `scipy.stats.ttest_rel` on 50 seeded random vectors within `1e-9`; scipy is a dev-only dependency and is not required at runtime.
 
 ## Tiers
 
-- Local tier (every gate run, coverage measured here): unit and property tests, plus conformance on small
-  fixtures kept in the repository.
-- CI tier: conformance that needs an external tool or a download. Mark them `@pytest.mark.conformance`; `scripts/check.py` deselects them locally
-  (unless `FABRICA_CI=1`). The CI `conformance` job sets `FABRICA_CI=1` and runs the full suite. Tools are installed
-  by the optional `ci/conformance-setup.sh` (bash, CI only; verify every download against a pinned SHA-256), and
-  tagged tests skip cleanly when their tool is missing.
+The repository contains one local pytest suite. No separate download or conformance tier is present in the checked-in files.
 
 ## Layout
 
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+- `tests/test_ranking_metrics.py` mirrors the public package.
+- The recorded test functions cover: `test_evaluate_acceptance_k4`, `test_evaluate_acceptance_k2`, `test_tie_breaking_docid_desc`, `test_paired_t_test_acceptance`, `test_paired_t_test_zero_variance_zero_mean`, and `test_paired_t_test_mismatch`.
